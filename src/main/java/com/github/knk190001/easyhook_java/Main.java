@@ -2,7 +2,9 @@ package com.github.knk190001.easyhook_java;
 
 import com.github.knk190001.easyhook_java.interop.Kernel32;
 import com.github.knk190001.easyhook_java.interop.LHUnmanaged;
-import jnr.ffi.*;
+import jnr.ffi.LibraryLoader;
+import jnr.ffi.Platform;
+import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
 import jnr.ffi.annotations.Delegate;
 import jnr.ffi.provider.MemoryManager;
@@ -19,32 +21,34 @@ public class Main {
 
     public static native int puts(String s);
 
+    public static LibC libc;
+
     public static void main(String[] args) {
         System.loadLibrary(Platform.getNativePlatform().getStandardCLibraryName());
         Pointer putsAddr = Kernel32.GetProcAddress(Kernel32.GetModuleHandleA("msvcrt"), "puts");
         MemoryManager memoryManager = Runtime.getSystemRuntime().getMemoryManager();
         Pointer out = memoryManager.allocate(Runtime.getSystemRuntime().addressSize());
         Pointer threads = memoryManager.allocate(Runtime.getSystemRuntime().longSize());
-        threads.putNativeLong(0,0);
+        threads.putNativeLong(0, 0);
         DelegatedPuts test = Main::putsRepl;
         Pointer replacementAddr = JNRUtil.DelegateToPointer(test, DelegatedPuts.class);
 
-        int result = LHUnmanaged.LhInstallHook(putsAddr, replacementAddr, Pointer.wrap(Runtime.getSystemRuntime(), 0L), out);
-        LHUnmanaged.LhSetInclusiveACL(threads,1,out);
+        int result = LHUnmanaged.lhInstallHook(putsAddr, replacementAddr, Pointer.wrap(Runtime.getSystemRuntime(), 0L), out);
+        LHUnmanaged.lhSetInclusiveACL(threads, 1, out);
+        LibC msvcrt = LibraryLoader.create(LibC.class).load("msvcrt");
+        libc = msvcrt;
 
         System.out.println("Result: " + result);
 
-
-        LibC msvcrt = LibraryLoader.create(LibC.class).load("msvcrt");
         msvcrt.puts("Hello world");
 
-        LHUnmanaged.LhUninstallHook(out);
+        LHUnmanaged.lhUninstallHook(out);
 
         msvcrt.puts("Hello world 2");
     }
 
     public static int putsRepl(String s){
-        System.out.println("Kono DIO da");
+        libc.puts("Kono DIO da!");
         return 0;
     }
 }
