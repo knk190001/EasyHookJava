@@ -21,34 +21,29 @@ public class Main {
 
     public static native int puts(String s);
 
-    public static LibC libc;
+    public static LibC msvcrt;
 
     public static void main(String[] args) {
         System.loadLibrary(Platform.getNativePlatform().getStandardCLibraryName());
         Pointer putsAddr = Kernel32.GetProcAddress(Kernel32.GetModuleHandleA("msvcrt"), "puts");
-        MemoryManager memoryManager = Runtime.getSystemRuntime().getMemoryManager();
-        Pointer out = memoryManager.allocate(Runtime.getSystemRuntime().addressSize());
-        Pointer threads = memoryManager.allocate(Runtime.getSystemRuntime().longSize());
-        threads.putNativeLong(0, 0);
-        DelegatedPuts test = Main::putsRepl;
-        Pointer replacementAddr = JNRUtil.DelegateToPointer(test, DelegatedPuts.class);
 
-        int result = LHUnmanaged.lhInstallHook(putsAddr, replacementAddr, Pointer.wrap(Runtime.getSystemRuntime(), 0L), out);
-        LHUnmanaged.lhSetInclusiveACL(threads, 1, out);
-        LibC msvcrt = LibraryLoader.create(LibC.class).load("msvcrt");
-        libc = msvcrt;
+        msvcrt = LibraryLoader.create(LibC.class).load("msvcrt");
+        LocalHook hook = LocalHook.create(putsAddr, Main::putsRepl, DelegatedPuts.class, null);
+        hook.setInclusiveACL(new long[]{ 0 });
 
-        System.out.println("Result: " + result);
+//        System.out.println("Result: " + );
 
         msvcrt.puts("Hello world");
-
-        LHUnmanaged.lhUninstallHook(out);
-
+//        LHUnmanaged.lhUninstallHook(out);
+        hook.uninstall();
         msvcrt.puts("Hello world 2");
+
+
+
     }
 
-    public static int putsRepl(String s){
-        libc.puts("Kono DIO da!");
+    public static int putsRepl(String s) {
+        msvcrt.puts("Kono DIO da!");
         return 0;
     }
 }

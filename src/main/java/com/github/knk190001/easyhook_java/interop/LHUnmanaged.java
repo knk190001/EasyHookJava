@@ -34,6 +34,10 @@ public class LHUnmanaged {
         int LhBarrierGetCallback(Pointer OutValue);
     }
 
+    public static LHUnmanagedImpl getInstance() {
+        return LHUnmanagedImpl.INSTANCE;
+    }
+
     public static int lhInstallHook(Pointer InEntryPoint, Pointer InHookProc, Pointer InCallback, Pointer OutHandle) {
         return LHUnmanagedImpl.INSTANCE.LhInstallHook(InEntryPoint, InHookProc, InCallback, OutHandle);
     }

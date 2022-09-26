@@ -9,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class JNRUtil {
-    public static <T> Pointer DelegateToPointer(T delegate, Class<T> delegateClass) {
+    public static <T> Pointer delegateToPointer(T delegate, Class<T> delegateClass) {
         try {
             Class<?> ncmClass = Class.forName("jnr.ffi.provider.jffi.NativeClosureManager");
             Method getClosurePointer = ncmClass.getDeclaredMethod("getClosurePointer", Class.class,Object.class);
