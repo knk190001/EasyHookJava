@@ -1,6 +1,5 @@
 package com.github.knk190001.easyhook_java;
 
-import com.github.knk190001.easyhook_java.interop.Kernel32;
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
 import jnr.ffi.annotations.Delegate;
@@ -18,7 +17,7 @@ public class Main {
     public static LibC msvcrt;
 
     public static void main(String[] args) {
-        Pointer putsAddr = Kernel32.GetProcAddress(Kernel32.GetModuleHandleA("msvcrt"), "puts");
+        Pointer putsAddr = LocalHook.GetProcAddress("msvcrt", "puts");
 
         msvcrt = LibraryLoader.create(LibC.class).load("msvcrt");
         LocalHook hook = LocalHook.create(putsAddr, Main::putsRepl, DelegatedPuts.class, null);

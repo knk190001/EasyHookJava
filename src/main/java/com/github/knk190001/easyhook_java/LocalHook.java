@@ -5,7 +5,6 @@ import com.github.knk190001.easyhook_java.interop.LHUnmanaged;
 import jnr.ffi.ObjectReferenceManager;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
-import jnr.ffi.provider.IntPointer;
 import jnr.ffi.provider.MemoryManager;
 
 public class LocalHook {
@@ -31,7 +30,7 @@ public class LocalHook {
         } else {
             inCallbackPointer = Pointer.wrap(rt, 0L);
         }
-        LHUnmanaged.lhInstallHook(inTargetProc, lambdaPointer, inCallbackPointer, hookTrace);
+        int result = LHUnmanaged.lhInstallHook(inTargetProc, lambdaPointer, inCallbackPointer, hookTrace);
         return new LocalHook(hookTrace);
     }
 
