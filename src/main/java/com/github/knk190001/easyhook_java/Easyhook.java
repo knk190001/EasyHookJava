@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.CopyOption;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Arrays;
 import java.util.List;
@@ -21,12 +19,12 @@ public class Easyhook {
             "FileMonInject.dll",
             "ProcMonInject.dll"
     );
-    ;
 
     public static String install() {
         Path easyHookDLLsDir = null;
         try {
             easyHookDLLsDir = Files.createTempDirectory("EasyHookDLLs");
+            easyHookDLLsDir.toFile().deleteOnExit();
 
             for (String dll : dlls) {
                 Path dllTargetPath = easyHookDLLsDir.resolve(dll);
@@ -40,21 +38,5 @@ public class Easyhook {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static void loadJarDll(String name) throws IOException {
-        InputStream in = Easyhook.class.getResourceAsStream("/" + name);
-        byte[] buffer = new byte[1024];
-        int read = -1;
-        File temp = File.createTempFile(name, "");
-        FileOutputStream fos = new FileOutputStream(temp);
-
-        while ((read = in.read(buffer)) != -1) {
-            fos.write(buffer, 0, read);
-        }
-        fos.close();
-        in.close();
-
-        System.load(temp.getAbsolutePath());
     }
 }
