@@ -1,10 +1,12 @@
 plugins {
-    java
     `maven-publish`
+    java
 }
 
+val currentVersion = "1.0.4"
+
 group = "com.github.knk190001.easyhook-java"
-version = "1.0.3"
+version = currentVersion
 
 repositories {
     mavenCentral()
@@ -25,9 +27,16 @@ publishing {
         create<MavenPublication>("mavenJava") {
             groupId = "com.github.knk190001.easyhook-java"
             artifactId = "easyhookjava"
-            version = "1.0.3"
+            version = currentVersion
 
             from(components["java"])
         }
     }
+}
+
+task("runJar", JavaExec::class){
+    this.dependsOn.add(tasks.getByName("jar"))
+    classpath = files("build/libs/EasyHookJava-$currentVersion.jar")
+    classpath += sourceSets.main.get().runtimeClasspath
+    mainClass.set("com.github.knk190001.easyhook_java.Main")
 }

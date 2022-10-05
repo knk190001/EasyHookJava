@@ -4,7 +4,9 @@ import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
 import jnr.ffi.annotations.Delegate;
 
-public class Main {
+import java.io.IOException;
+
+class Main {
     public interface LibC { // A representation of libC in Java
         int puts(String s); // mapping of the puts function, in C `int puts(const char *s);`
     }
@@ -16,7 +18,7 @@ public class Main {
 
     public static LibC msvcrt;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Pointer putsAddr = LocalHook.GetProcAddress("msvcrt", "puts");
 
         msvcrt = LibraryLoader.create(LibC.class).load("msvcrt");

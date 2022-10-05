@@ -1,11 +1,12 @@
 package com.github.knk190001.easyhook_java.interop;
 
+import com.github.knk190001.easyhook_java.Easyhook;
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
 
 public class LHUnmanaged {
     protected interface LHUnmanagedImpl {
-        LHUnmanagedImpl INSTANCE = LibraryLoader.create(LHUnmanagedImpl.class).load("EasyHook64.dll");
+        LHUnmanagedImpl INSTANCE = LibraryLoader.create(LHUnmanagedImpl.class).load(Easyhook.install());
 
         int LhInstallHook(Pointer InEntryPoint, Pointer InHookProc, Pointer InCallback, Pointer OutHandle);
 
