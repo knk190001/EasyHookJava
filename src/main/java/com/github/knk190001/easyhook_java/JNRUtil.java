@@ -1,5 +1,6 @@
 package com.github.knk190001.easyhook_java;
 
+import com.github.knk190001.easyhook_java.interop.LHUnmanaged;
 import jnr.ffi.LibraryLoader;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
@@ -10,16 +11,7 @@ import java.lang.reflect.Method;
 
 public class JNRUtil {
     public static <T> Pointer delegateToPointer(T delegate, Class<T> delegateClass) {
-        try {
-            Class<?> ncmClass = Class.forName("jnr.ffi.provider.jffi.NativeClosureManager");
-            Method getClosurePointer = ncmClass.getDeclaredMethod("getClosurePointer", Class.class,Object.class);
-            getClosurePointer.setAccessible(true);
-            Object ncm = NativeRuntime.getInstance().getClosureManager();
-
-            return ((Pointer) getClosurePointer.invoke(ncm, delegateClass, delegate));
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        throw new IllegalStateException("Unable to get pointer for delegate");
+        Runtime rt = Runtime.getRuntime(LHUnmanaged.getInstance());
+        return rt.getClosureManager().getClosurePointer(delegateClass, delegate);
     }
 }
