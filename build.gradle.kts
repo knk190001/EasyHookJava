@@ -3,7 +3,7 @@ plugins {
     java
 }
 
-val currentVersion = "1.0.5"
+val currentVersion = "1.0.6"
 
 group = "com.github.knk190001.easyhook-java"
 version = currentVersion
